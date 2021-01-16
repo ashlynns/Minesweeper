@@ -46,32 +46,87 @@ for mine in mine_idx:
 	
 	mines_grid[x][y] = 9
 
-def get_adj(idx, grid):
+def get_adj(idx, grid, x_len, y_len):
 	x = idx[0] 
 	y = idx[1]
 
-	adj = []
-	adj.append(grid[x-1][y-1]) #top left
-	adj.append(grid[x][y-1]) #top
-	adj.append(grid[x+1][y-1]) #top right 
+	x_len = x_len -1 # get index rater than length 
+	y_len = y_len -1 # get index rater than length
 
-	adj.append(grid[x-1][y]) #middle left
-	adj.append(grid[x+1][y]) #middle right
+	adj = [0, 0, 0, 0, 0, 0, 0, 0] # TL, T, TR, ML, MR, BL, B, BR
 
-	adj.append(grid[x-1][y+1]) #bottom left
-	adj.append(grid[x][y+1]) #bottom
-	adj.append(grid[x+1][y+1]) #bottom right
+	if x == 0:
+		if y == 0:
+			adj[4] = grid[x+1][y] #middle right
+			adj[6] = grid[x][y+1] #bottom
+			adj[7] = grid[x+1][y+1] #bottom right
+		elif y == y_len: 
+			adj[1] = grid[x][y-1] #top
+			adj[2] = grid[x+1][y-1] #top right 
+			adj[4] = grid[x+1][y] #middle right
+		else: 
+			adj[1] = grid[x][y-1] #top
+			adj[2] = grid[x+1][y-1] #top right 
+			adj[4] = grid[x+1][y] #middle right
+			adj[6] = grid[x][y+1] #bottom
+			adj[7] = grid[x+1][y+1] #bottom right
+	
+	elif y == 0: 
+		if x == x_len:
+			adj[3] = grid[x-1][y] #middle left
+			adj[5] = grid[x-1][y+1] #bottom left
+			adj[6] = grid[x][y+1] #bottom
+		else:
+			adj[3] = grid[x-1][y] #middle left
+			adj[4] = grid[x+1][y] #middle right
+			adj[5] = grid[x-1][y+1] #bottom left
+			adj[6] = grid[x][y+1] #bottom
+			adj[7] = grid[x+1][y+1] #bottom right
+	
+	elif y == y_len:
+		if x == x_len: 
+			adj[0] =grid[x-1][y-1] #top left
+			adj[1] = grid[x][y-1] #top
+			adj[3] = grid[x-1][y] #middle left
+		else:
+			adj[0] =grid[x-1][y-1] #top left
+			adj[1] = grid[x][y-1] #top
+			adj[2] = grid[x+1][y-1] #top right 
+
+			adj[3] = grid[x-1][y] #middle left
+			adj[4] = grid[x+1][y] #middle right
+	
+	elif x == x_len:
+		adj[0] =grid[x-1][y-1] #top left
+		adj[1] = grid[x][y-1] #top
+		adj[3] = grid[x-1][y] #middle left
+		adj[5] = grid[x-1][y+1] #bottom left
+		adj[6] = grid[x][y+1] #bottom
+
+	else: 		
+		adj[0] =grid[x-1][y-1] #top left
+		adj[1] = grid[x][y-1] #top
+		adj[2] = grid[x+1][y-1] #top right 
+
+		adj[3] = grid[x-1][y] #middle left
+		adj[4] = grid[x+1][y] #middle right
+
+		adj[5] = grid[x-1][y+1] #bottom left
+		adj[6] = grid[x][y+1] #bottom
+		adj[7] = grid[x+1][y+1] #bottom right
 
 	counter = 0
-
 	for x in adj:
 		if x == 9:
 			counter +=1
 	return(counter)
 
+for y in range(usr_grid_y):
+	for x in range(usr_grid_x):
+		if mines_grid[x][y] != 9:
+			mines_grid[x][y] = get_adj([x,y], mines_grid, usr_grid_x, usr_grid_y)
 
-test = get_adj([2,3], mines_grid)
-mines_grid[2][3] = 10
+print(mines_grid)
 
 # Initialize window size
 cell_x = 35
@@ -117,7 +172,6 @@ while not done:
 				if mines_grid[x][y]==10:
 					color = black
 				pygame.draw.rect(screen, color, [(margin+cell_x)*x+margin, (margin+cell_y)*y+margin, cell_x, cell_y ])
-
 
  
 	# --- Go ahead and update the screen with what we've drawn.
