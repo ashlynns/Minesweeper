@@ -8,6 +8,7 @@ pygame.init()
 # surrounding cells, 4 = 4 mines in surrounding cells..)
 # 
 # A 9 in the gameplay matrix represents a mine 
+# A 10 in the gameplay matrix represents a user placed flag 
 ### ------------------------------------------------------###
 
 
@@ -121,12 +122,11 @@ def get_adj(idx, grid, x_len, y_len):
 			counter +=1
 	return(counter)
 
-for y in range(usr_grid_y):
+for y in range(usr_grid_y): # Loop through all indces to get adj values 
 	for x in range(usr_grid_x):
-		if mines_grid[x][y] != 9:
+		if mines_grid[x][y] != 9: # dont overwrite the mines 
 			mines_grid[x][y] = get_adj([x,y], mines_grid, usr_grid_x, usr_grid_y)
 
-print(mines_grid)
 
 # Initialize window size
 cell_x = 35
@@ -152,6 +152,15 @@ while not done:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			done = True
+		elif event.type == pygame.MOUSEBUTTONDOWN:
+			pos = pygame.mouse.get_pos() # location of click 
+			pos_x = pos[0]//(cell_x+margin) # Map location to index 
+			pos_y = pos[1]//(cell_y+margin)
+			if event.button == 1: # left click 
+				flags_grid[pos_x][pos_y] = mines_grid[pos_x][pos_y]
+			elif event.button == 3: # right click 
+				flags_grid[pos_x][pos_y] = 10
+			print(flags_grid)
  
 	# --- Game logic should go here
  
@@ -169,8 +178,6 @@ while not done:
 				color = white
 				if mines_grid[x][y]==9:
 					color = red
-				if mines_grid[x][y]==10:
-					color = black
 				pygame.draw.rect(screen, color, [(margin+cell_x)*x+margin, (margin+cell_y)*y+margin, cell_x, cell_y ])
 
  
